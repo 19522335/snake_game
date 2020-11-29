@@ -78,9 +78,15 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 			gotoXY(snake[0].x, snake[0].y);
 			cout << "^";
 			if (snake[i].x == SnakeX) {
-				if (snake[i].y == SnakeY-1) {
-					gotoXY(snake[i].x, snake[i].y);
-					cout << (char)217;
+				if (snake[i].y == SnakeY){
+					if (snake[i + 1].x == SnakeX + 1) {
+						gotoXY(snake[i].x, snake[i].y);
+						cout << (char)192;
+					}
+					else {
+						gotoXY(snake[i].x, snake[i].y);
+						cout << (char)217;
+					}
 				}
 				else {
 					gotoXY(snake[i].x, snake[i].y);
@@ -98,10 +104,27 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 		for (int i = 1; i < numberOfDots; i++)
 		{
 			gotoXY(snake[0].x, snake[0].y);
-			cout << 'v';
-			gotoXY(snake[i].x, snake[i].y);
-			setTextColor(10);
-			cout << (char)179;
+			cout << "v";
+			if (snake[i].x == SnakeX) {
+				if (snake[i].y == SnakeY) {
+					if (snake[i + 1].x == SnakeX + 1) {
+						gotoXY(snake[i].x, snake[i].y);
+						cout << (char)218;	
+					}
+					else {
+						gotoXY(snake[i].x, snake[i].y);
+						cout << (char)191;
+					}
+				}
+				else {
+					gotoXY(snake[i].x, snake[i].y);
+					cout << (char)179;
+				}
+			}
+			else {
+				gotoXY(snake[i].x, snake[i].y);
+				cout << (char)196;
+			}
 		}
 		break;
 
@@ -109,10 +132,27 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 		for (int i = 1; i < numberOfDots; i++)
 		{
 			gotoXY(snake[0].x, snake[0].y);
-			cout << '<';
-			gotoXY(snake[i].x, snake[i].y);
-			setTextColor(10);
-			cout << (char)196;
+			cout << "<";
+			if (snake[i].y == SnakeY) {
+				if (snake[i].x == SnakeX) {
+					if (snake[i + 1].y == SnakeY + 1) {
+						gotoXY(snake[i].x, snake[i].y);
+						cout << (char)191;
+					}
+					else {
+						gotoXY(snake[i].x, snake[i].y);
+						cout << (char)217;
+					}
+				}
+				else {
+					gotoXY(snake[i].x, snake[i].y);
+					cout << (char)196;
+				}
+			}
+			else {
+				gotoXY(snake[i].x, snake[i].y);
+				cout << (char)179;
+			}
 		}
 		break;
 
@@ -120,17 +160,34 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 		for (int i = 1; i < numberOfDots; i++)
 		{
 			gotoXY(snake[0].x, snake[0].y);
-			cout << '>';
-			gotoXY(snake[i].x, snake[i].y);
-			setTextColor(10);
-			cout << (char)196;
+			cout << ">";
+			if (snake[i].y == SnakeY) {
+				if (snake[i].x == SnakeX) {
+					if (snake[i + 1].y == SnakeY + 1) {
+						gotoXY(snake[i].x, snake[i].y);
+						cout << (char)218;
+					}
+					else {
+						gotoXY(snake[i].x, snake[i].y);
+						cout << (char)192;
+					}
+				}
+				else {
+					gotoXY(snake[i].x, snake[i].y);
+					cout << (char)196;
+				}
+			}
+			else {
+				gotoXY(snake[i].x, snake[i].y);
+				cout << (char)179;
+			}
 		}
 		break;
 	}
 }
 
 // di chuyển
-void move(int direct,int &SnakeX,int &SnakeY)
+void move(int direct)
 {
 	// xóa đuôi cũ
 	gotoXY(snake[numberOfDots - 1].x, snake[numberOfDots - 1].y);
@@ -138,59 +195,50 @@ void move(int direct,int &SnakeX,int &SnakeY)
 
 	for (int i = numberOfDots - 1; i > 0; i--)
 		snake[i] = snake[i - 1];
-	int n;
 	switch (direct)
 	{
 	case UP:
-		SnakeX = snake[0].x;
 		snake[0].y--;
-		SnakeY = snake[0].y;
-		n = 0;
-		SnakeY += n;
-		n++;
 		break;
 
 	case DOWN:
-		SnakeX = snake[0].x;
-		SnakeY = snake[0].y;
-		n = 0;
-		SnakeY -= n;
-		n++;
 		snake[0].y++;
 		break;
 
 	case LEFT:
-		SnakeX = snake[0].x;
-		SnakeY = snake[0].y;
-		n = 0;
-		SnakeX += n;
-		n++;
 		snake[0].x--;
 		break;
 
 	case RIGHT:
-		SnakeX = snake[0].x;
-		SnakeY = snake[0].y;
-		n = 0;
-		SnakeX -= n;
-		n++;
 		snake[0].x++;
 		break;
 	}
 }
 
 // đổi hướng theo phím bấm
-void do_events(int& direct)
+void do_events(int& direct, int &SnakeX,int &SnakeY)
 {
 	int key = inputKey();
-	if ((key == 'w' || key == 'W' || key == KEY_UP) && direct != DOWN)
+	if ((key == 'w' || key == 'W' || key == KEY_UP) && direct != DOWN && direct != UP) {
 		direct = UP;
-	else if ((key == 's' || key == 'S' || key == KEY_DOWN) && direct != UP)
+		SnakeX = snake[0].x;
+		SnakeY = snake[0].y;
+	}
+	else if ((key == 's' || key == 'S' || key == KEY_DOWN) && direct != UP && direct != DOWN) {
 		direct = DOWN;
-	else if ((key == 'd' || key == 'D' || key == KEY_RIGHT) && direct != LEFT)
+		SnakeX = snake[0].x;
+		SnakeY = snake[0].y;
+	}
+	else if ((key == 'd' || key == 'D' || key == KEY_RIGHT) && direct != LEFT && direct != RIGHT) {
 		direct = RIGHT;
-	else if ((key == 'a' || key == 'A' || key == KEY_LEFT) && direct != RIGHT)
+		SnakeX = snake[0].x;
+		SnakeY = snake[0].y;
+	}
+	else if ((key == 'a' || key == 'A' || key == KEY_LEFT) && direct != RIGHT && direct != LEFT) {
 		direct = LEFT;
+		SnakeX = snake[0].x;
+		SnakeY = snake[0].y;
+	}
 }
 
 // vẽ tường
@@ -303,8 +351,8 @@ void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 	{
 		gotoXY(Left_Wall + 7, Bottom_Wall + 1);
 		cout << point;
-		do_events(direction);
-		move(direction,SnakeX,SnakeY);
+		do_events(direction,SnakeX,SnakeY);
+		move(direction);
 		display_Snake(direction, SnakeX, SnakeY);
 		if (checkEatFood(food) == true)
 		{
