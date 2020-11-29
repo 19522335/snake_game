@@ -93,10 +93,10 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 					cout << (char)179;
 				}
 			}
-			else {
+			/*else {
 				gotoXY(snake[i].x, snake[i].y);
 				cout << (char)196;
-			}
+			}*/
 		}
 		break;
 
@@ -121,10 +121,10 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 					cout << (char)179;
 				}
 			}
-			else {
+			/*else {
 				gotoXY(snake[i].x, snake[i].y);
 				cout << (char)196;
-			}
+			}*/
 		}
 		break;
 
@@ -149,10 +149,10 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 					cout << (char)196;
 				}
 			}
-			else {
+			/*else {
 				gotoXY(snake[i].x, snake[i].y);
 				cout << (char)179;
-			}
+			}*/
 		}
 		break;
 
@@ -177,10 +177,10 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 					cout << (char)196;
 				}
 			}
-			else {
+			/*else {
 				gotoXY(snake[i].x, snake[i].y);
 				cout << (char)179;
-			}
+			}*/
 		}
 		break;
 	}
