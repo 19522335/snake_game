@@ -43,7 +43,7 @@ struct ToaDo
 ToaDo snake[MAX];
 ToaDo FakeFood[MAX];
 int numberOfFakeFoods = 1;
-int numberOfDots = 3; // số nốt ban đầu của rắn
+int numberOfDots = 11; // số nốt ban đầu của rắn
 int direction = RIGHT; // khởi tạo hướng đi ban đầu 
 
 int point = 0;
@@ -52,28 +52,85 @@ int point = 0;
 // khởi tạo rắn
 void init_Snake(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 {
-	snake[0].x = Left_Wall + 3;
-	snake[1].x = Left_Wall + 2;
-	snake[2].x = Left_Wall + 1;
-	snake[0].y = snake[1].y = snake[2].y = Top_Wall + 1;
+	snake[0].x = Left_Wall + 11;
+	snake[1].x = Left_Wall + 10;
+	snake[2].x = Left_Wall + 9;
+	snake[3].x = Left_Wall + 8;
+	snake[4].x = Left_Wall + 7;
+	snake[5].x = Left_Wall + 6;
+	snake[6].x = Left_Wall + 5;
+	snake[7].x = Left_Wall + 4;
+	snake[8].x = Left_Wall + 3;
+	snake[9].x = Left_Wall + 2;
+	snake[10].x = Left_Wall + 1;
+	snake[0].y = snake[1].y = snake[2].y = snake[3].y = snake[4].y = snake[5].y = snake[6].y = snake[7].y = snake[8].y = snake[9].y = snake[10].y = Bottom_Wall/2 + 1;
 }
 
 // hiển thị rắn
-void display_Snake()
+void display_Snake(int direction, int SnakeX, int SnakeY)
 {
 	noCursorType();
-	for (int i = 1; i < numberOfDots; i++)
+	switch (direction)
 	{
-		gotoXY(snake[0].x, snake[0].y);
-		cout << 'O';
-		gotoXY(snake[i].x, snake[i].y);
-		setTextColor(10);
-		cout << '~';
+	case UP:
+		for (int i = 1; i < numberOfDots; i++)
+		{
+			gotoXY(snake[0].x, snake[0].y);
+			cout << "^";
+			if (snake[i].x == SnakeX) {
+				if (snake[i].y == SnakeY-1) {
+					gotoXY(snake[i].x, snake[i].y);
+					cout << (char)217;
+				}
+				else {
+					gotoXY(snake[i].x, snake[i].y);
+					cout << (char)179;
+				}
+			}
+			else {
+				gotoXY(snake[i].x, snake[i].y);
+				cout << (char)196;
+			}
+		}
+		break;
+
+	case DOWN:
+		for (int i = 1; i < numberOfDots; i++)
+		{
+			gotoXY(snake[0].x, snake[0].y);
+			cout << 'v';
+			gotoXY(snake[i].x, snake[i].y);
+			setTextColor(10);
+			cout << (char)179;
+		}
+		break;
+
+	case LEFT:
+		for (int i = 1; i < numberOfDots; i++)
+		{
+			gotoXY(snake[0].x, snake[0].y);
+			cout << '<';
+			gotoXY(snake[i].x, snake[i].y);
+			setTextColor(10);
+			cout << (char)196;
+		}
+		break;
+
+	case RIGHT:
+		for (int i = 1; i < numberOfDots; i++)
+		{
+			gotoXY(snake[0].x, snake[0].y);
+			cout << '>';
+			gotoXY(snake[i].x, snake[i].y);
+			setTextColor(10);
+			cout << (char)196;
+		}
+		break;
 	}
 }
 
 // di chuyển
-void move(int direct)
+void move(int direct,int &SnakeX,int &SnakeY)
 {
 	// xóa đuôi cũ
 	gotoXY(snake[numberOfDots - 1].x, snake[numberOfDots - 1].y);
@@ -81,22 +138,42 @@ void move(int direct)
 
 	for (int i = numberOfDots - 1; i > 0; i--)
 		snake[i] = snake[i - 1];
-
+	int n;
 	switch (direct)
 	{
 	case UP:
+		SnakeX = snake[0].x;
 		snake[0].y--;
+		SnakeY = snake[0].y;
+		n = 0;
+		SnakeY += n;
+		n++;
 		break;
 
 	case DOWN:
+		SnakeX = snake[0].x;
+		SnakeY = snake[0].y;
+		n = 0;
+		SnakeY -= n;
+		n++;
 		snake[0].y++;
 		break;
 
 	case LEFT:
+		SnakeX = snake[0].x;
+		SnakeY = snake[0].y;
+		n = 0;
+		SnakeX += n;
+		n++;
 		snake[0].x--;
 		break;
 
 	case RIGHT:
+		SnakeX = snake[0].x;
+		SnakeY = snake[0].y;
+		n = 0;
+		SnakeX -= n;
+		n++;
 		snake[0].x++;
 		break;
 	}
@@ -142,9 +219,8 @@ void draw_wall(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall){
 		gotoXY(x, Bottom_Wall);
 		cout << (char)205;
 	}
-
-
-	cout << endl;
+	cout << "\n";
+	cout << "Point: " << endl;
 }
 
 // kiểm tra gắn chết
@@ -222,13 +298,14 @@ void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 {
 	ToaDo food = display_food(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);// hiển thị thức ăn và trả về tọa độ 		
 							 // vòng lặp trò chơi
+	int SnakeX,SnakeY; // lấy toạ độ thân rắn lúc quẹo 
 	while (true)
 	{
-		gotoXY(Left_Wall, Bottom_Wall + 1);
-		cout << "Point: " << point;
+		gotoXY(Left_Wall + 7, Bottom_Wall + 1);
+		cout << point;
 		do_events(direction);
-		move(direction);
-		display_Snake();
+		move(direction,SnakeX,SnakeY);
+		display_Snake(direction, SnakeX, SnakeY);
 		if (checkEatFood(food) == true)
 		{
 			food = display_food(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
