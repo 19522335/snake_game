@@ -2,10 +2,10 @@
 //
 #include <iostream>
 #include"Control_Library.h"
+#include "wtypes.h"
 #include<time.h> 
 using namespace std;
 
-#define FAKE_FOOD 254
 #define DOT_SNAKE 254
 #define MAX 100
 
@@ -14,10 +14,26 @@ using namespace std;
 #define LEFT 3
 #define RIGHT 4
 
-#define WALL_TOP 1
-#define WALL_BOTTOM 13
-#define WALL_LEFT 3
-#define WALL_RIGHT 53
+//#define Top_Wall 0
+//#define Bottom_Wall 1080/20
+//#define Left_Wall 0
+//#define Right_Wall 1920/20
+
+
+// Get the horizontal and vertical screen sizes in pixel
+/*void GetDesktopResolution(int& horizontal, int& vertical)
+{
+	RECT desktop;
+	// Get a handle to the desktop window
+	const HWND hDesktop = GetDesktopWindow();
+	// Get the size of screen to the variable desktop
+	GetWindowRect(hDesktop, &desktop);
+	// The top left corner will have coordinates (0,0)
+	// and the bottom right corner will have coordinates
+	// (horizontal, vertical)
+	horizontal = desktop.right;
+	vertical = desktop.bottom;
+}*/
 
 struct ToaDo
 {
@@ -34,23 +50,25 @@ int point = 0;
 // điểm số khi người chơi bắt đầu
 
 // khởi tạo rắn
-void init_Snake()
+void init_Snake(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 {
-	snake[0].x = WALL_LEFT + 3;
-	snake[1].x = WALL_LEFT + 2;
-	snake[2].x = WALL_LEFT + 1;
-	snake[0].y = snake[1].y = snake[2].y = WALL_TOP + 1;
+	snake[0].x = Left_Wall + 3;
+	snake[1].x = Left_Wall + 2;
+	snake[2].x = Left_Wall + 1;
+	snake[0].y = snake[1].y = snake[2].y = Top_Wall + 1;
 }
 
 // hiển thị rắn
 void display_Snake()
 {
 	noCursorType();
-	for (int i = 0; i < numberOfDots; i++)
+	for (int i = 1; i < numberOfDots; i++)
 	{
+		gotoXY(snake[0].x, snake[0].y);
+		cout << 'O';
 		gotoXY(snake[i].x, snake[i].y);
 		setTextColor(10);
-		cout << (char)DOT_SNAKE;
+		cout << '~';
 	}
 }
 
@@ -99,44 +117,50 @@ void do_events(int& direct)
 }
 
 // vẽ tường
-void draw_wall()
-{
-	// hiển thị tường trái
-	for (int y = WALL_TOP + 1; y <= WALL_BOTTOM; y++)
-	{
-		gotoXY(WALL_LEFT, y);
-		cout << (char)221;
+void draw_wall(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall){
+	// draw corner
+	gotoXY(Left_Wall, Top_Wall);
+	cout << char(201);
+	gotoXY(Left_Wall, Bottom_Wall);
+	cout << char(200);
+	gotoXY(Right_Wall, Bottom_Wall);
+	cout << char(188);
+	gotoXY(Right_Wall, Top_Wall);
+	cout << char(187);
+	// Draw left + right wall
+	for (int y = Top_Wall + 1; y <= Bottom_Wall - 1; y++) {
+		gotoXY(Left_Wall, y);
+		cout << (char)186;
+		gotoXY(Right_Wall, y);
+		cout << (char)186;
 	}
-	//  hiển thị tường trên
-	for (int x = WALL_LEFT; x <= WALL_RIGHT; x++)
-	{
-		gotoXY(x, WALL_TOP);
-		cout << (char)220;
-		gotoXY(x, WALL_BOTTOM);
-		cout << (char)223;
+
+	//Draw Top + bottom wall
+	for (int x = Left_Wall + 1; x <= Right_Wall - 1; x++) {
+		gotoXY(x, Top_Wall);
+		cout << (char)205;
+		gotoXY(x, Bottom_Wall);
+		cout << (char)205;
 	}
-	//  hiển thị tường phải
-	for (int y = WALL_TOP + 1; y <= WALL_BOTTOM - 1; y++)
-	{
-		gotoXY(WALL_RIGHT, y);
-		cout << (char)222;
-	}
+
+
+	cout << endl;
 }
 
 // kiểm tra gắn chết
-bool check_Gameover()
+bool check_Gameover(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 {
 	// đụng tường trên
-	if (snake[0].y == WALL_TOP)
+	if (snake[0].y == Top_Wall)
 		return true;
 	// đụng tường dưới
-	if (snake[0].y == WALL_BOTTOM)
+	if (snake[0].y == Bottom_Wall)
 		return true;
 	// đụng tường trái
-	if (snake[0].x == WALL_LEFT)
+	if (snake[0].x == Left_Wall)
 		return true;
 	// đụng tường phải
-	if (snake[0].x == WALL_RIGHT)
+	if (snake[0].x == Right_Wall)
 		return true;
 	// ăn dính fake food
 	for (int i = 0; i < numberOfFakeFoods; i++)
@@ -152,30 +176,30 @@ bool check_Gameover()
 
 
 // hiển thị mồi ăn đc, màu vàng
-ToaDo display_food()
+ToaDo display_food(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 {
-	int x = WALL_LEFT + 1 + rand() % (WALL_RIGHT - WALL_LEFT - 1); // a + rand() % (b - a + 1) random from a to b
-	int y = WALL_TOP + 1 + rand() % (WALL_BOTTOM - WALL_TOP - 1);
+	int x = Left_Wall + 1 + rand() % (Right_Wall - Left_Wall - 1); // a + rand() % (b - a + 1) random from a to b
+	int y = Top_Wall + 1 + rand() % (Bottom_Wall - Top_Wall - 1);
 	//tránh việc mồi spawn trên con rắn
 	for (int i = 1; i < numberOfDots; i++) {
 		if (snake[i].x == x && snake[i].y == y) {
-			x += 1;
-			y += 1;
+			x = Left_Wall + 1 + rand() % (Right_Wall - Left_Wall - 1);
+			y = Top_Wall + 1 + rand() % (Bottom_Wall - Top_Wall - 1);
 		}
 	}
 	gotoXY(x, y);
 	setTextColor(6);
-	cout << (char)DOT_SNAKE;
+	cout << (char)111;
 	return ToaDo{ x, y };
 }
 //hiển thị fake food, màu đỏ
-ToaDo display_FAKEfood()
+ToaDo display_FAKEfood(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 {
-	int x = WALL_LEFT + 1 + rand() % (WALL_RIGHT - WALL_LEFT - 1); // a + rand() % (b - a + 1) random from a to b
-	int y = WALL_TOP + 1 + rand() % (WALL_BOTTOM - WALL_TOP - 1);
+	int x = Left_Wall + 1 + rand() % (Right_Wall - Left_Wall - 1); // a + rand() % (b - a + 1) random from a to b
+	int y = Top_Wall + 1 + rand() % (Bottom_Wall - Top_Wall - 1);
 	gotoXY(x, y);
 	setTextColor(4);
-	cout << (char)FAKE_FOOD;
+	cout << 'o';
 	return ToaDo{ x, y };
 }
 // rắn ăn mồi
@@ -194,26 +218,26 @@ void addDots()
 }
 
 // bắt đầu game
-void run_game()
+void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 {
-	ToaDo food = display_food();// hiển thị thức ăn và trả về tọa độ 		
+	ToaDo food = display_food(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);// hiển thị thức ăn và trả về tọa độ 		
 							 // vòng lặp trò chơi
 	while (true)
 	{
-		gotoXY(WALL_LEFT, WALL_BOTTOM + 1);
+		gotoXY(Left_Wall, Bottom_Wall + 1);
 		cout << "Point: " << point;
 		do_events(direction);
 		move(direction);
 		display_Snake();
 		if (checkEatFood(food) == true)
 		{
-			food = display_food();
+			food = display_food(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 			addDots();
 			point++;
 			numberOfFakeFoods++;
-			FakeFood[numberOfFakeFoods] = display_FAKEfood();
+			FakeFood[numberOfFakeFoods] = display_FAKEfood(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 		}
-		if (check_Gameover() == true)
+		if (check_Gameover(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall) == true)
 			break;
 
 		Sleep(100);
@@ -223,20 +247,14 @@ void run_game()
 
 int main()
 {
-	init_Snake();
-	draw_wall();
-	run_game();
+	int Left_Wall = 0,
+		Top_Wall = 0,
+		Right_Wall = 100,
+		Bottom_Wall = 20;
+	//GetDesktopResolution(Right_Wall, Bottom_Wall);*/
+	init_Snake(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+	draw_wall(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+	run_game(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	system("Pause");
 	return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
