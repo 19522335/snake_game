@@ -1,8 +1,8 @@
 ﻿// Snake Hunter.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-#include <iostream>
+#include<iostream>
 #include"Control_Library.h"
-#include "wtypes.h"
+#include"wtypes.h"
 #include<time.h> 
 using namespace std;
 
@@ -63,7 +63,8 @@ void init_Snake(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 	snake[8].x = Left_Wall + 3;
 	snake[9].x = Left_Wall + 2;
 	snake[10].x = Left_Wall + 1;
-	snake[0].y = snake[1].y = snake[2].y = snake[3].y = snake[4].y = snake[5].y = snake[6].y = snake[7].y = snake[8].y = snake[9].y = snake[10].y = Bottom_Wall/2 + 1;
+	snake[0].y = Bottom_Wall / 2 + 1;
+	snake[1].y = snake[2].y = snake[3].y = snake[4].y = snake[5].y = snake[6].y = snake[7].y = snake[8].y = snake[9].y = snake[10].y = Bottom_Wall / 2 + 1;
 }
 
 // hiển thị rắn
@@ -89,14 +90,12 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 					}
 				}
 				else {
-					gotoXY(snake[i].x, snake[i].y);
-					cout << (char)179;
+					if (snake[i].y < SnakeY) {
+						gotoXY(snake[i].x, snake[i].y);
+						cout << (char)179;
+					}
 				}
 			}
-			/*else {
-				gotoXY(snake[i].x, snake[i].y);
-				cout << (char)196;
-			}*/
 		}
 		break;
 
@@ -117,14 +116,12 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 					}
 				}
 				else {
-					gotoXY(snake[i].x, snake[i].y);
-					cout << (char)179;
+					if (snake[i].y > SnakeY) {
+						gotoXY(snake[i].x, snake[i].y);
+						cout << (char)179;
+					}
 				}
 			}
-			/*else {
-				gotoXY(snake[i].x, snake[i].y);
-				cout << (char)196;
-			}*/
 		}
 		break;
 
@@ -145,14 +142,12 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 					}
 				}
 				else {
-					gotoXY(snake[i].x, snake[i].y);
-					cout << (char)196;
+					if (snake[i].x < SnakeX) {
+						gotoXY(snake[i].x, snake[i].y);
+						cout << (char)196;
+					}
 				}
 			}
-			/*else {
-				gotoXY(snake[i].x, snake[i].y);
-				cout << (char)179;
-			}*/
 		}
 		break;
 
@@ -173,14 +168,12 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 					}
 				}
 				else {
-					gotoXY(snake[i].x, snake[i].y);
-					cout << (char)196;
+					if (snake[i].x > SnakeX) {
+						gotoXY(snake[i].x, snake[i].y);
+						cout << (char)196;
+					}
 				}
 			}
-			/*else {
-				gotoXY(snake[i].x, snake[i].y);
-				cout << (char)179;
-			}*/
 		}
 		break;
 	}
