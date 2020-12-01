@@ -4,6 +4,8 @@
 #include"Control_Library.h"
 #include"wtypes.h"
 #include<time.h> 
+#include"string"
+
 using namespace std;
 
 #define DOT_SNAKE 254
@@ -90,7 +92,7 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 					}
 				}
 				else {
-					if (snake[i].y < SnakeY) {
+					if (snake[i].y < SnakeY && snake[i].y>snake[0].y) {
 						gotoXY(snake[i].x, snake[i].y);
 						cout << (char)179;
 					}
@@ -116,7 +118,7 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 					}
 				}
 				else {
-					if (snake[i].y > SnakeY) {
+					if (snake[i].y > SnakeY && snake[i].y < snake[0].y) {
 						gotoXY(snake[i].x, snake[i].y);
 						cout << (char)179;
 					}
@@ -142,7 +144,7 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 					}
 				}
 				else {
-					if (snake[i].x < SnakeX) {
+					if (snake[i].x < SnakeX && snake[i].x > snake[0].x) {
 						gotoXY(snake[i].x, snake[i].y);
 						cout << (char)196;
 					}
@@ -168,7 +170,7 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 					}
 				}
 				else {
-					if (snake[i].x > SnakeX) {
+					if (snake[i].x > SnakeX && snake[i].x < snake[0].x) {
 						gotoXY(snake[i].x, snake[i].y);
 						cout << (char)196;
 					}
@@ -334,9 +336,96 @@ void addDots()
 	numberOfDots++;
 }
 
+/*void do_events_GameOver(int& direct)
+{
+	int key = inputKey();
+	if ((key == 'w' || key == 'W' || key == KEY_UP) && direct != DOWN) {
+		direct = UP;
+	}
+	else if ((key == 's' || key == 'S' || key == KEY_DOWN) && direct != UP) {
+		direct = DOWN;
+	}
+	else if ((key == 'd' || key == 'D' || key == KEY_RIGHT) && direct != LEFT) {
+		direct = RIGHT;
+	}
+	else if ((key == 'a' || key == 'A' || key == KEY_LEFT) && direct != RIGHT) {
+		direct = LEFT;
+	}
+}*/
+
+/*void move_GameOver(int direct,int Right_Wall,int Bottom_Wall){
+				
+	switch (direct)
+	{
+	case UP:
+		gotoXY(Right_Wall / 2 - 5, Bottom_Wall / 2 + 3);
+		break;
+
+	case DOWN:
+		gotoXY(Right_Wall / 2 - 5, Bottom_Wall / 2 + 4);
+		break;
+
+	case LEFT:
+		gotoXY(Right_Wall / 2 - 5, Bottom_Wall / 2 + 4);
+		break;
+
+	case RIGHT:
+		gotoXY(Right_Wall / 2 - 5, Bottom_Wall / 2 + 4);
+		break;
+	}
+	case '\n':
+
+}*/
+
+bool Display_GameOver(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall) {
+	clrscr();
+	// draw corner
+	gotoXY(Left_Wall, Top_Wall);
+	cout << char(201);
+	gotoXY(Left_Wall, Bottom_Wall);
+	cout << char(200);
+	gotoXY(Right_Wall, Bottom_Wall);
+	cout << char(188);
+	gotoXY(Right_Wall, Top_Wall);
+	cout << char(187);
+	// Draw left + right wall
+	for (int y = Top_Wall + 1; y <= Bottom_Wall - 1; y++) {
+		gotoXY(Left_Wall, y);
+		cout << (char)186;
+		gotoXY(Right_Wall, y);
+		cout << (char)186;
+	}
+	//Draw Top + bottom wall
+	for (int x = Left_Wall + 1; x <= Right_Wall - 1; x++) {
+		gotoXY(x, Top_Wall);
+		cout << (char)205;
+		gotoXY(x, Bottom_Wall);
+		cout << (char)205;
+	}
+	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 - 1);
+	cout << "GAME OVER!";
+	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 + 1);
+	cout << "Your POINT: ";
+	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 + 3);
+	cout << "PLay again?";
+	//gotoXY(Right_Wall / 2 - 5, Bottom_Wall / 2 + 4);
+	//cout << "EXIT";
+	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 + 4);
+	cout << "Type \"yes\" to continue. ";
+	gotoXY(Right_Wall / 2 + 7, Bottom_Wall / 2 + 3);
+	string a;
+	getline(cin, a);
+	if (a == "yes" || a=="YES" || a=="Yes")
+		return true;
+	return false;
+}
+
 // bắt đầu game
 void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 {
+	clrscr();
+	init_Snake(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+	draw_wall(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	ToaDo food = display_food(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);// hiển thị thức ăn và trả về tọa độ 		
 							 // vòng lặp trò chơi
 	int SnakeX,SnakeY; // lấy toạ độ thân rắn lúc quẹo 
@@ -355,11 +444,17 @@ void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 			numberOfFakeFoods++;
 			FakeFood[numberOfFakeFoods] = display_FAKEfood(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 		}
-		if (check_Gameover(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall) == true)
+		if (check_Gameover(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall) == true) {
 			break;
+		}
 
 		Sleep(100);
 	}
+	Sleep(500);
+	if (Display_GameOver(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall) == true) {
+		return run_game(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+	}
+	gotoXY(Left_Wall, Bottom_Wall + 1);
 }
 // kết thúc game
 
@@ -370,8 +465,6 @@ int main()
 		Right_Wall = 100,
 		Bottom_Wall = 20;
 	//GetDesktopResolution(Right_Wall, Bottom_Wall);*/
-	init_Snake(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
-	draw_wall(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	run_game(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	system("Pause");
 	return 0;
