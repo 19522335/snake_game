@@ -44,7 +44,6 @@ struct ToaDo
 
 ToaDo snake[MAX];
 ToaDo FakeFood[MAX];
-int numberOfFakeFoods = 1;
 int numberOfDots = 11; // số nốt ban đầu của rắn
 int direction = RIGHT; // khởi tạo hướng đi ban đầu 
 
@@ -70,7 +69,7 @@ void init_Snake(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 }
 
 // hiển thị rắn
-void display_Snake(int direction, int SnakeX, int SnakeY)
+void display_Snake(int direction, int SnakeX, int SnakeY, int SpeedX, int SpeedY)
 {
 	noCursorType();
 	switch (direction)
@@ -99,6 +98,7 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 				}
 			}
 		}
+		Sleep(SpeedY);
 		break;
 
 	case DOWN:
@@ -125,6 +125,7 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 				}
 			}
 		}
+		Sleep(SpeedY);
 		break;
 
 	case LEFT:
@@ -151,6 +152,7 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 				}
 			}
 		}
+		Sleep(SpeedX);
 		break;
 
 	case RIGHT:
@@ -177,6 +179,7 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 				}
 			}
 		}
+		Sleep(SpeedX);
 		break;
 	}
 }
@@ -263,7 +266,7 @@ void draw_wall(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall){
 		cout << (char)205;
 	}
 	cout << "\n";
-	cout << "Point: " << endl;
+	cout << "Point: " << point << endl;
 }
 
 // kiểm tra gắn chết
@@ -282,9 +285,9 @@ bool check_Gameover(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall
 	if (snake[0].x == Right_Wall)
 		return true;
 	// ăn dính fake food
-	for (int i = 0; i < numberOfFakeFoods; i++)
-		if (snake[0].x == FakeFood[i].x && snake[0].y == FakeFood[i].y)
-			return true;
+	//for (int i = 0; i < numberOfFakeFoods; i++)
+	//	if (snake[0].x == FakeFood[i].x && snake[0].y == FakeFood[i].y)
+	//		return true;
 	// tự hủy
 	for (int i = 1; i < numberOfDots; i++)
 		if (snake[0].x == snake[i].x && snake[0].y == snake[i].y)
@@ -308,33 +311,80 @@ ToaDo display_food(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 	}
 	gotoXY(x, y);
 	setTextColor(6);
-	cout << (char)111;
+	cout << (char) 149;
 	return ToaDo{ x, y };
 }
 //hiển thị fake food, màu đỏ
-ToaDo display_FAKEfood(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
+ToaDo display_FakeFood(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 {
 	int x = Left_Wall + 1 + rand() % (Right_Wall - Left_Wall - 1); // a + rand() % (b - a + 1) random from a to b
 	int y = Top_Wall + 1 + rand() % (Bottom_Wall - Top_Wall - 1);
+	//tránh việc mồi spawn trên con rắn
+	for (int i = 1; i < numberOfDots; i++) {
+		if (snake[i].x == x && snake[i].y == y) {
+			x = Left_Wall + 1 + rand() % (Right_Wall - Left_Wall - 1);
+			y = Top_Wall + 1 + rand() % (Bottom_Wall - Top_Wall - 1);
+		}
+	}
 	gotoXY(x, y);
 	setTextColor(4);
-	cout << 'o';
+	cout << (char)149;
+	return ToaDo{ x, y };
+}
+ToaDo display_DeathFood(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
+{
+	int x = Left_Wall + 1 + rand() % (Right_Wall - Left_Wall - 1); // a + rand() % (b - a + 1) random from a to b
+	int y = Top_Wall + 1 + rand() % (Bottom_Wall - Top_Wall - 1);
+	//tránh việc mồi spawn trên con rắn
+	for (int i = 1; i < numberOfDots; i++) {
+		if (snake[i].x == x && snake[i].y == y) {
+			x = Left_Wall + 1 + rand() % (Right_Wall - Left_Wall - 1);
+			y = Top_Wall + 1 + rand() % (Bottom_Wall - Top_Wall - 1);
+		}
+	}
+	gotoXY(x, y);
+	setTextColor(2);
+	cout << (char)149;
 	return ToaDo{ x, y };
 }
 // rắn ăn mồi
-bool checkEatFood(ToaDo food)
-{
-	if (snake[0].x == food.x && snake[0].y == food.y)
+bool checkEatFood(ToaDo food, int &SpeedX, int &SpeedY){
+	if (snake[0].x == food.x && snake[0].y == food.y) {
+		SpeedX -= 2;
+		SpeedY -= 6;
 		return true;
+	}
 	return false;
 }
-
+bool checkEatFakeFood(ToaDo fake_food, int &SpeedX, int &SpeedY){
+	if (snake[0].x == fake_food.x && snake[0].y == fake_food.y) {
+		SpeedX += 2;
+		SpeedY += 6;
+		return true;
+	}
+	return false;
+}
+bool checkEatDeathFood(ToaDo death_food) {
+	if (snake[0].x == death_food.x && snake[0].y == death_food.y) {
+		return true;
+	}
+	return false;
+}
 // thêm nốt cho rắn 
 void addDots()
 {
 	snake[numberOfDots] = snake[numberOfDots - 1];
 	numberOfDots++;
 }
+
+void subDots()
+{
+	snake[numberOfDots] = snake[numberOfDots + 1];
+	numberOfDots--;
+	gotoXY(snake[numberOfDots].x, snake[numberOfDots].y);
+	cout << " ";
+}
+
 
 /*void do_events_GameOver(int& direct)
 {
@@ -405,7 +455,7 @@ bool Display_GameOver(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wa
 	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 - 1);
 	cout << "GAME OVER!";
 	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 + 1);
-	cout << "Your POINT: ";
+	cout << "Your POINT: " << point << endl;
 	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 + 3);
 	cout << "PLay again?";
 	//gotoXY(Right_Wall / 2 - 5, Bottom_Wall / 2 + 4);
@@ -426,32 +476,40 @@ void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 	clrscr();
 	init_Snake(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	draw_wall(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
-	ToaDo food = display_food(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);// hiển thị thức ăn và trả về tọa độ 		
-							 // vòng lặp trò chơi
+	ToaDo food = display_food(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);// hiển thị thức ăn và trả về tọa độ
+	ToaDo fake_food = display_FakeFood(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+	ToaDo death_food = display_DeathFood(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	int SnakeX,SnakeY; // lấy toạ độ thân rắn lúc quẹo 
+	int SpeedX = 100, SpeedY = 130; 
+	// vòng lặp trò chơi
 	while (true)
 	{
 		gotoXY(Left_Wall + 7, Bottom_Wall + 1);
 		cout << point;
 		do_events(direction,SnakeX,SnakeY);
 		move(direction);
-		display_Snake(direction, SnakeX, SnakeY);
-		if (checkEatFood(food) == true)
+		display_Snake(direction, SnakeX, SnakeY, SpeedX, SpeedY);
+		if (checkEatFood(food,SpeedX,SpeedY) == true)
 		{
 			food = display_food(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 			addDots();
 			point++;
-			numberOfFakeFoods++;
-			FakeFood[numberOfFakeFoods] = display_FAKEfood(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 		}
+		if (checkEatFakeFood(fake_food,SpeedX,SpeedY) == true)
+		{
+			fake_food = display_FakeFood(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+			subDots();
+		}
+		if (checkEatDeathFood(death_food) == true)
+			break;
 		if (check_Gameover(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall) == true) {
 			break;
 		}
-
-		Sleep(100);
 	}
 	Sleep(500);
 	if (Display_GameOver(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall) == true) {
+		point = 0;
+		numberOfDots = 11;
 		return run_game(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	}
 	gotoXY(Left_Wall, Bottom_Wall + 1);
@@ -462,8 +520,8 @@ int main()
 {
 	int Left_Wall = 0,
 		Top_Wall = 0,
-		Right_Wall = 100,
-		Bottom_Wall = 20;
+		Right_Wall = 80,
+		Bottom_Wall = 27;
 	//GetDesktopResolution(Right_Wall, Bottom_Wall);*/
 	run_game(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	system("Pause");
