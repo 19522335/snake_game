@@ -1,4 +1,4 @@
-#include "kmin_console.h"
+﻿#include "Control_Library.h"
 
 // Lấy nút bàn phím do người dùng bấm
 // Trả về: Mã của phím
@@ -27,34 +27,34 @@ int inputKey()
 // Xóa màn hình
 void clrscr()
 {
-	CONSOLE_SCREEN_BUFFER_INFO	csbiInfo;                  
+	CONSOLE_SCREEN_BUFFER_INFO	csbiInfo;
 	HANDLE	hConsoleOut;
-	COORD	Home = {0,0};
+	COORD	Home = { 0,0 };
 	DWORD	dummy;
 
 	hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	GetConsoleScreenBufferInfo(hConsoleOut,&csbiInfo);
+	GetConsoleScreenBufferInfo(hConsoleOut, &csbiInfo);
 
-	FillConsoleOutputCharacter(hConsoleOut,' ',csbiInfo.dwSize.X * csbiInfo.dwSize.Y,Home,&dummy);
+	FillConsoleOutputCharacter(hConsoleOut, ' ', csbiInfo.dwSize.X * csbiInfo.dwSize.Y, Home, &dummy);
 	csbiInfo.dwCursorPosition.X = 0;
 	csbiInfo.dwCursorPosition.Y = 0;
-	SetConsoleCursorPosition(hConsoleOut,csbiInfo.dwCursorPosition);
+	SetConsoleCursorPosition(hConsoleOut, csbiInfo.dwCursorPosition);
 }
 
 // Di chuyển con trỏ console đến vị trí có tọa độ (x, y)
-void gotoXY (int x, int y)
+void gotoXY(int x, int y)
 {
 	COORD coord;
 	coord.X = x;
 	coord.Y = y;
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
 // Lấy tọa độ x hiện tại của con trỏ console
 int whereX()
 {
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	if(GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi))
+	if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi))
 		return csbi.dwCursorPosition.X;
 	return -1;
 }
@@ -63,7 +63,7 @@ int whereX()
 int whereY()
 {
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	if(GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi))
+	if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi))
 		return csbi.dwCursorPosition.Y;
 	return -1;
 }
@@ -79,7 +79,7 @@ void noCursorType()
 
 // Đổi màu chữ
 // Tham số: Mã màu
-void setTextColor (int color)
+void setTextColor(int color)
 {
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE) , color);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }

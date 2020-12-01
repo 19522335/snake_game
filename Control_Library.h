@@ -1,10 +1,4 @@
-// ---------------------------------
-// Học viện Khoa học máy tính Kmin
-// fb.com/hocvienkmin
-// Sưu tầm và hiệu chỉnh
-// ---------------------------------
-
-#pragma once
+﻿#pragma once
 #include <stdio.h>
 #include <conio.h>
 #include <windows.h>
@@ -40,7 +34,7 @@ int inputKey();
 void clrscr();
 
 // Di chuyển con trỏ console đến vị trí có tọa độ (x, y)
-void gotoXY (int x, int y);
+void gotoXY(int x, int y);
 
 // Lấy tọa độ x hiện tại của con trỏ console
 int whereX();
@@ -53,5 +47,5 @@ void noCursorType();
 
 // Đổi màu chữ
 // Tham số: Mã màu
-void setTextColor (int color);
+void setTextColor(int color);
 //end----------------------Screen----------------------end
