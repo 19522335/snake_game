@@ -1,6 +1,15 @@
 # snake_game
 SS004.L16.CNCL Đồ án cuối kì KNNN 
 
+# Thông báo ngày 2020/12/02 Thứ 4
+
+1. Mình đã up lại hợp đồng nhóm, mọi người có thể vào xem:
+  + Đã bổ sung thêm phần tiêu chí đánh giá.
+  + Đã chỉnh sửa lại lề trên bảng thành viên.
+2. Chỉ còn 2 tuần nữa là kết thúc đồ án, mọi người cố gắng hoàn thành tốt các tasks của mình tốt nhất có thể nha. Có thắc mắc gì có thể liên hệ trực tiếp với mình qua facebook.
+
+Cảm ơn mọi người. Buổi tối vui vẻ.
+
 
 # Thông báo ngày 2020/12/01 Thứ 3
 
