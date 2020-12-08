@@ -1,6 +1,11 @@
 # snake_game
 SS004.L16.CNCL Đồ án cuối kì KNNN 
 
+# Thông báo 2020/12/08 Thứ 3
+1. Đã chốt phần start game + kết thúc game là Yes/No
+
+Mình sẽ làm báo cáo cho đồ án của nhóm từ hôm nay cho đến trước khi nộp đồ án là 2020/12/15. Nếu có thêm thắc mắc thì các thành viên cứ trao đổi trực tiếp với mình nhé !!!
+
 # Thông báo ngày 2020/12/02 Thứ 4
 
 1. Mình đã up lại hợp đồng nhóm, mọi người có thể vào xem:
