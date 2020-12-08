@@ -316,6 +316,13 @@ ToaDo display_FAKEfood(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_W
 {
 	int x = Left_Wall + 1 + rand() % (Right_Wall - Left_Wall - 1); // a + rand() % (b - a + 1) random from a to b
 	int y = Top_Wall + 1 + rand() % (Bottom_Wall - Top_Wall - 1);
+	//tránh việc mồi spawn trên con rắn
+	for (int i = 1; i < numberOfDots; i++) {
+		if (snake[i].x == x && snake[i].y == y) {
+			x = Left_Wall + 1 + rand() % (Right_Wall - Left_Wall - 1);
+			y = Top_Wall + 1 + rand() % (Bottom_Wall - Top_Wall - 1);
+		}
+	}
 	gotoXY(x, y);
 	setTextColor(4);
 	cout << 'o';
@@ -325,6 +332,13 @@ ToaDo display_FAKEfood(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_W
 bool checkEatFood(ToaDo food)
 {
 	if (snake[0].x == food.x && snake[0].y == food.y)
+		return true;
+	return false;
+}
+
+bool checkEatFakeFood(ToaDo fakefood)
+{
+	if (snake[0].x == fakefood.x && snake[0].y == fakefood.y)
 		return true;
 	return false;
 }
@@ -423,11 +437,13 @@ bool Display_GameOver(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wa
 // bắt đầu game
 void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 {
+	point = 0; // reset point
 	clrscr();
 	init_Snake(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	draw_wall(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	ToaDo food = display_food(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);// hiển thị thức ăn và trả về tọa độ 		
-							 // vòng lặp trò chơi
+	ToaDo fake_food = display_FAKEfood(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+																			// vòng lặp trò chơi
 	int SnakeX,SnakeY; // lấy toạ độ thân rắn lúc quẹo 
 	while (true)
 	{
@@ -436,19 +452,26 @@ void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 		do_events(direction,SnakeX,SnakeY);
 		move(direction);
 		display_Snake(direction, SnakeX, SnakeY);
+		
 		if (checkEatFood(food) == true)
 		{
 			food = display_food(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 			addDots();
 			point++;
-			numberOfFakeFoods++;
-			FakeFood[numberOfFakeFoods] = display_FAKEfood(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 		}
+
+		if (checkEatFakeFood(fake_food) == true)
+		{
+			point = point - 1;
+			fake_food = display_FAKEfood(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+			addDots();
+		}
+
 		if (check_Gameover(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall) == true) {
 			break;
 		}
 
-		Sleep(100);
+		Sleep(50);
 	}
 	Sleep(500);
 	if (Display_GameOver(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall) == true) {
