@@ -28,6 +28,9 @@ int direction = RIGHT; // khởi tạo hướng đi ban đầu
 
 int point = 0;
 // điểm số khi người chơi bắt đầu
+void Display_GameStart(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall);
+void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall);
+void Display_GameOver(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall);
 
 // khởi tạo rắn
 void init_Snake(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
@@ -244,7 +247,7 @@ void draw_wall(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall) {
 	gotoXY(Right_Wall + 4, Top_Wall + 7);
 	cout << "Yellow food = Reduce point and become shorter.";
 	gotoXY(Left_Wall, Bottom_Wall + 1);
-	setTextColor(10);
+	setTextColor(7);
 	cout << "Point: " << point << endl;
 }
 // kiểm tra gắn chết
@@ -597,57 +600,92 @@ void DrawGameName(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall) 
 	gotoXY(Left_Wall + 63, Top_Wall + 10);
 	cout << char(219);
 }
-bool Display_GameOver(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall) {
+void Display_GameOver(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall) {
 	clrscr();
+	draw_wall(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	DrawGameName(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
-	// draw corner
-	gotoXY(Left_Wall, Top_Wall);
+	int Top = 19, Bottom = 21;
+	int LeftPA = 24, RightPA = 38;
+	int LeftMenu = 42, RightMenu = 50;
+	//draw play again
+	gotoXY(LeftPA, Top);
 	cout << char(201);
-	gotoXY(Left_Wall, Bottom_Wall);
+	gotoXY(LeftPA, Bottom);
 	cout << char(200);
-	gotoXY(Right_Wall, Bottom_Wall);
+	gotoXY(RightPA, Bottom);
 	cout << char(188);
-	gotoXY(Right_Wall, Top_Wall);
+	gotoXY(RightPA, Top);
 	cout << char(187);
 	// Draw left + right wall
-	for (int y = Top_Wall + 1; y <= Bottom_Wall - 1; y++) {
-		gotoXY(Left_Wall, y);
+	for (int y = Top + 1; y <= Bottom - 1; y++) {
+		gotoXY(LeftPA, y);
 		cout << (char)186;
-		gotoXY(Right_Wall, y);
+		gotoXY(RightPA, y);
 		cout << (char)186;
 	}
 	//Draw Top + bottom wall
-	for (int x = Left_Wall + 1; x <= Right_Wall - 1; x++) {
-		gotoXY(x, Top_Wall);
+	for (int x = LeftPA + 1; x <= RightPA - 1; x++) {
+		gotoXY(x, Top);
 		cout << (char)205;
-		gotoXY(x, Bottom_Wall);
+		gotoXY(x, Bottom);
 		cout << (char)205;
 	}
+	gotoXY(LeftPA + 1, Top + 1);
+	cout << "1.PLAY AGAIN";
 
-	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 - 1);
+
+	//draw HighScore
+	gotoXY(LeftMenu, Top);
+	cout << char(201);
+	gotoXY(LeftMenu, Bottom);
+	cout << char(200);
+	gotoXY(RightMenu, Bottom);
+	cout << char(188);
+	gotoXY(RightMenu, Top);
+	cout << char(187);
+	// Draw left + right wall
+	for (int y = Top + 1; y <= Bottom - 1; y++) {
+		gotoXY(LeftMenu, y);
+		cout << (char)186;
+		gotoXY(RightMenu, y);
+		cout << (char)186;
+	}
+	//Draw Top + bottom wall
+	for (int x = LeftMenu + 1; x <= RightMenu - 1; x++) {
+		gotoXY(x, Top);
+		cout << (char)205;
+		gotoXY(x, Bottom);
+		cout << (char)205;
+	}
+	gotoXY(LeftMenu + 1, Top + 1);
+	cout << "2.MENU";
+
+
+
+	gotoXY(36, Bottom + 2);
 	cout << "GAME OVER!";
-	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 + 1);
-	cout << "Your POINT: " << point << endl;
-	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 + 3);
-	cout << "PLay again?";
-	//gotoXY(Right_Wall / 2 - 5, Bottom_Wall / 2 + 4);
-	//cout << "EXIT";
-	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 + 4);
-	cout << "Type \"yes\" to continue. ";
-	gotoXY(Right_Wall / 2 + 7, Bottom_Wall / 2 + 3);
-	string a;
-	getline(cin, a);
-	if (a == "yes" || a == "YES" || a == "Yes")
-		return true;
-	return false;
+	gotoXY(35, Bottom + 3);
+	cout << "YOUR SCORE: " << point;
+	gotoXY(34, Bottom + 5);
+	cout << "PRESS NUMBER: ";
+	gotoXY(48, Bottom+5);
+	int n;
+	cin >> n;
+	if (n==1)
+		run_game(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+	if (n == 2);
+		Display_GameStart(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 }
 void Display_GameStart(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall) {
 	clrscr();
+	draw_wall(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	DrawGameName(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
-	int Top = 18, Bottom = 23;
-	int LeftStart = 20, RightStart = 29;
-	int LeftHS = 33, RightHS = 46;
-	int LeftExit = 50, RightExit = 58;
+	int Top = 18, Bottom = 20;
+	int LeftStart = 21, RightStart = 30;
+	int LeftHS = 34, RightHS = 48;
+	int LeftExit = 51, RightExit = 59;
+
+
 	//draw Start
 	gotoXY(LeftStart, Top);
 	cout << char(201);
@@ -671,8 +709,10 @@ void Display_GameStart(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_W
 		gotoXY(x, Bottom);
 		cout << (char)205;
 	}
-	gotoXY(LeftStart + 2, Top + 2);
+	gotoXY(LeftStart + 1, Top + 1);
 	cout << "1.START";
+
+
 	//draw HighScore
 	gotoXY(LeftHS, Top);
 	cout << char(201);
@@ -696,8 +736,10 @@ void Display_GameStart(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_W
 		gotoXY(x, Bottom);
 		cout << (char)205;
 	}
-	gotoXY(LeftHS + 2, Top + 2);
+	gotoXY(LeftHS + 1, Top +1);
 	cout << "2.HIGHTSCORE";
+
+
 	//Draw Exit
 	gotoXY(LeftExit, Top);
 	cout << char(201);
@@ -721,8 +763,10 @@ void Display_GameStart(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_W
 		gotoXY(x, Bottom);
 		cout << (char)205;
 	}
-	gotoXY(LeftExit + 2, Top + 2);
+	gotoXY(LeftExit + 1, Top + 1);
 	cout << "3.EXIT";
+
+
 	gotoXY(34, Bottom + 3);
 	cout << "PRESS NUMBER: ";
 	gotoXY(48, Bottom + 3);
@@ -732,13 +776,18 @@ void Display_GameStart(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_W
 		run_game(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	if (n == 2)
 		cout << point;
-	if (n == 3)
-		return;
+	if (n == 3) {
+		gotoXY(0, Bottom_Wall + 1);
+		cout << "Exiting....." << endl;
+	}
+	return;
 }
 // bắt đầu game
-void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
-{
+void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall){
 	clrscr();
+	point = 0;
+	numberOfDots = 5;
+	direction = RIGHT;
 	setTextColor(7);
 	init_Snake(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	draw_wall(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
@@ -775,12 +824,7 @@ void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 		setTextColor(7);
 	}
 	Sleep(500);
-	if (Display_GameOver(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall) == true) {
-		point = 0;
-		numberOfDots = 5;
-		direction = RIGHT;
-		run_game(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
-	}
+	Display_GameOver(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	gotoXY(Left_Wall, Bottom_Wall + 1);
 }
 // kết thúc game
