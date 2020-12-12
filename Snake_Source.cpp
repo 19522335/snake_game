@@ -16,27 +16,6 @@ using namespace std;
 #define LEFT 3
 #define RIGHT 4
 
-//#define Top_Wall 0
-//#define Bottom_Wall 1080/20
-//#define Left_Wall 0
-//#define Right_Wall 1920/20
-
-
-// Get the horizontal and vertical screen sizes in pixel
-/*void GetDesktopResolution(int& horizontal, int& vertical)
-{
-	RECT desktop;
-	// Get a handle to the desktop window
-	const HWND hDesktop = GetDesktopWindow();
-	// Get the size of screen to the variable desktop
-	GetWindowRect(hDesktop, &desktop);
-	// The top left corner will have coordinates (0,0)
-	// and the bottom right corner will have coordinates
-	// (horizontal, vertical)
-	horizontal = desktop.right;
-	vertical = desktop.bottom;
-}*/
-
 struct ToaDo
 {
 	int x, y;
@@ -44,33 +23,28 @@ struct ToaDo
 
 ToaDo snake[MAX];
 ToaDo FakeFood[MAX];
-int numberOfFakeFoods = 1;
-int numberOfDots = 11; // số nốt ban đầu của rắn
+int numberOfDots = 5; // số nốt ban đầu của rắn
 int direction = RIGHT; // khởi tạo hướng đi ban đầu 
 
 int point = 0;
 // điểm số khi người chơi bắt đầu
+void Display_GameStart(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall);
+void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall);
+void Display_GameOver(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall);
 
 // khởi tạo rắn
 void init_Snake(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 {
-	snake[0].x = Left_Wall + 11;
-	snake[1].x = Left_Wall + 10;
-	snake[2].x = Left_Wall + 9;
-	snake[3].x = Left_Wall + 8;
-	snake[4].x = Left_Wall + 7;
-	snake[5].x = Left_Wall + 6;
-	snake[6].x = Left_Wall + 5;
-	snake[7].x = Left_Wall + 4;
-	snake[8].x = Left_Wall + 3;
-	snake[9].x = Left_Wall + 2;
-	snake[10].x = Left_Wall + 1;
+	snake[0].x = Left_Wall + 5;
+	snake[1].x = Left_Wall + 4;
+	snake[2].x = Left_Wall + 3;
+	snake[3].x = Left_Wall + 2;
+	snake[4].x = Left_Wall + 1;
 	snake[0].y = Bottom_Wall / 2 + 1;
-	snake[1].y = snake[2].y = snake[3].y = snake[4].y = snake[5].y = snake[6].y = snake[7].y = snake[8].y = snake[9].y = snake[10].y = Bottom_Wall / 2 + 1;
+	snake[1].y = snake[2].y = snake[3].y = snake[4].y = Bottom_Wall / 2 + 1;
 }
-
 // hiển thị rắn
-void display_Snake(int direction, int SnakeX, int SnakeY)
+void display_Snake(int direction, int SnakeX, int SnakeY, int SpeedX, int SpeedY)
 {
 	noCursorType();
 	switch (direction)
@@ -81,7 +55,7 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 			gotoXY(snake[0].x, snake[0].y);
 			cout << "^";
 			if (snake[i].x == SnakeX) {
-				if (snake[i].y == SnakeY){
+				if (snake[i].y == SnakeY) {
 					if (snake[i + 1].x == SnakeX + 1) {
 						gotoXY(snake[i].x, snake[i].y);
 						cout << (char)192;
@@ -99,6 +73,7 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 				}
 			}
 		}
+		Sleep(SpeedY);
 		break;
 
 	case DOWN:
@@ -110,7 +85,7 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 				if (snake[i].y == SnakeY) {
 					if (snake[i + 1].x == SnakeX + 1) {
 						gotoXY(snake[i].x, snake[i].y);
-						cout << (char)218;	
+						cout << (char)218;
 					}
 					else {
 						gotoXY(snake[i].x, snake[i].y);
@@ -125,6 +100,7 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 				}
 			}
 		}
+		Sleep(SpeedY);
 		break;
 
 	case LEFT:
@@ -151,6 +127,7 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 				}
 			}
 		}
+		Sleep(SpeedX);
 		break;
 
 	case RIGHT:
@@ -177,10 +154,10 @@ void display_Snake(int direction, int SnakeX, int SnakeY)
 				}
 			}
 		}
+		Sleep(SpeedX);
 		break;
 	}
 }
-
 // di chuyển
 void move(int direct)
 {
@@ -209,9 +186,8 @@ void move(int direct)
 		break;
 	}
 }
-
 // đổi hướng theo phím bấm
-void do_events(int& direct, int &SnakeX,int &SnakeY)
+void do_events(int& direct, int& SnakeX, int& SnakeY)
 {
 	int key = inputKey();
 	if ((key == 'w' || key == 'W' || key == KEY_UP) && direct != DOWN && direct != UP) {
@@ -235,9 +211,8 @@ void do_events(int& direct, int &SnakeX,int &SnakeY)
 		SnakeY = snake[0].y;
 	}
 }
-
 // vẽ tường
-void draw_wall(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall){
+void draw_wall(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall) {
 	// draw corner
 	gotoXY(Left_Wall, Top_Wall);
 	cout << char(201);
@@ -262,10 +237,19 @@ void draw_wall(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall){
 		gotoXY(x, Bottom_Wall);
 		cout << (char)205;
 	}
-	cout << "\n";
-	cout << "Point: " << endl;
-}
 
+	gotoXY(Right_Wall + 4, Top_Wall + 1);
+	cout << "*** NOTE ***";
+	gotoXY(Right_Wall + 4, Top_Wall + 3);
+	cout << "Red food = Death.";
+	gotoXY(Right_Wall + 4, Top_Wall + 5);
+	cout << "Green food = Increase point and become longer.";
+	gotoXY(Right_Wall + 4, Top_Wall + 7);
+	cout << "Yellow food = Reduce point and become shorter.";
+	gotoXY(Left_Wall, Bottom_Wall + 1);
+	setTextColor(7);
+	cout << "Point: " << point << endl;
+}
 // kiểm tra gắn chết
 bool check_Gameover(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 {
@@ -281,10 +265,9 @@ bool check_Gameover(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall
 	// đụng tường phải
 	if (snake[0].x == Right_Wall)
 		return true;
-	// ăn dính fake food
-	for (int i = 0; i < numberOfFakeFoods; i++)
-		if (snake[0].x == FakeFood[i].x && snake[0].y == FakeFood[i].y)
-			return true;
+	// Point < 0
+	if (point < 0)
+		return true;
 	// tự hủy
 	for (int i = 1; i < numberOfDots; i++)
 		if (snake[0].x == snake[i].x && snake[0].y == snake[i].y)
@@ -292,8 +275,6 @@ bool check_Gameover(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall
 	return false;
 
 }
-
-
 // hiển thị mồi ăn đc, màu vàng
 ToaDo display_food(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 {
@@ -307,12 +288,28 @@ ToaDo display_food(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 		}
 	}
 	gotoXY(x, y);
-	setTextColor(6);
-	cout << (char)111;
+	setTextColor(2);
+	cout << (char)149;
 	return ToaDo{ x, y };
 }
 //hiển thị fake food, màu đỏ
-ToaDo display_FAKEfood(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
+ToaDo display_FakeFood(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
+{
+	int x = Left_Wall + 1 + rand() % (Right_Wall - Left_Wall - 1); // a + rand() % (b - a + 1) random from a to b
+	int y = Top_Wall + 1 + rand() % (Bottom_Wall - Top_Wall - 1);
+	//tránh việc mồi spawn trên con rắn
+	for (int i = 1; i < numberOfDots; i++) {
+		if (snake[i].x == x && snake[i].y == y) {
+			x = Left_Wall + 1 + rand() % (Right_Wall - Left_Wall - 1);
+			y = Top_Wall + 1 + rand() % (Bottom_Wall - Top_Wall - 1);
+		}
+	}
+	gotoXY(x, y);
+	setTextColor(6);
+	cout << (char)149;
+	return ToaDo{ x, y };
+}
+ToaDo display_DeathFood(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
 {
 	int x = Left_Wall + 1 + rand() % (Right_Wall - Left_Wall - 1); // a + rand() % (b - a + 1) random from a to b
 	int y = Top_Wall + 1 + rand() % (Bottom_Wall - Top_Wall - 1);
@@ -325,158 +322,509 @@ ToaDo display_FAKEfood(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_W
 	}
 	gotoXY(x, y);
 	setTextColor(4);
-	cout << 'o';
+	cout << (char)149;
 	return ToaDo{ x, y };
 }
 // rắn ăn mồi
-bool checkEatFood(ToaDo food)
-{
-	if (snake[0].x == food.x && snake[0].y == food.y)
+bool checkEatFood(ToaDo food, int& SpeedX, int& SpeedY) {
+	if (snake[0].x == food.x && snake[0].y == food.y) {
+		SpeedX += 2;
+		SpeedY += 2;
 		return true;
+	}
 	return false;
 }
-
-bool checkEatFakeFood(ToaDo fakefood)
-{
-	if (snake[0].x == fakefood.x && snake[0].y == fakefood.y)
+bool checkEatFakeFood(ToaDo fake_food, int& SpeedX, int& SpeedY) {
+	if (snake[0].x == fake_food.x && snake[0].y == fake_food.y) {
+		SpeedX += 2;
+		SpeedY += 2;
 		return true;
+	}
 	return false;
 }
-
+bool checkEatDeathFood(ToaDo death_food) {
+	if (snake[0].x == death_food.x && snake[0].y == death_food.y) {
+		return true;
+	}
+	return false;
+}
 // thêm nốt cho rắn 
 void addDots()
 {
 	snake[numberOfDots] = snake[numberOfDots - 1];
 	numberOfDots++;
 }
-
-/*void do_events_GameOver(int& direct)
+void subDots()
 {
-	int key = inputKey();
-	if ((key == 'w' || key == 'W' || key == KEY_UP) && direct != DOWN) {
-		direct = UP;
-	}
-	else if ((key == 's' || key == 'S' || key == KEY_DOWN) && direct != UP) {
-		direct = DOWN;
-	}
-	else if ((key == 'd' || key == 'D' || key == KEY_RIGHT) && direct != LEFT) {
-		direct = RIGHT;
-	}
-	else if ((key == 'a' || key == 'A' || key == KEY_LEFT) && direct != RIGHT) {
-		direct = LEFT;
-	}
-}*/
-
-/*void move_GameOver(int direct,int Right_Wall,int Bottom_Wall){
-				
-	switch (direct)
-	{
-	case UP:
-		gotoXY(Right_Wall / 2 - 5, Bottom_Wall / 2 + 3);
-		break;
-
-	case DOWN:
-		gotoXY(Right_Wall / 2 - 5, Bottom_Wall / 2 + 4);
-		break;
-
-	case LEFT:
-		gotoXY(Right_Wall / 2 - 5, Bottom_Wall / 2 + 4);
-		break;
-
-	case RIGHT:
-		gotoXY(Right_Wall / 2 - 5, Bottom_Wall / 2 + 4);
-		break;
-	}
-	case '\n':
-
-}*/
-
-bool Display_GameOver(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall) {
+	snake[numberOfDots] = snake[numberOfDots + 1];
+	numberOfDots--;
+	gotoXY(snake[numberOfDots].x, snake[numberOfDots].y);
+	cout << " ";
+}
+void DrawGameName(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall) {
+	// S
+	gotoXY(Left_Wall + 16, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 16, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 16, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 16, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 17, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 17, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 17, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 18, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 18, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 18, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 19, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 19, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 19, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 19, Top_Wall + 10);
+	cout << char(219);
+	// N
+	gotoXY(Left_Wall + 21, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 21, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 21, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 21, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 21, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 22, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 23, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 24, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 24, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 24, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 24, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 24, Top_Wall + 10);
+	cout << char(219);
+	// A
+	gotoXY(Left_Wall + 26, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 26, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 26, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 26, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 27, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 27, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 28, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 28, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 29, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 29, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 29, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 29, Top_Wall + 10);
+	cout << char(219);
+	// K
+	gotoXY(Left_Wall + 31, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 31, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 31, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 31, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 31, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 32, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 33, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 33, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 34, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 34, Top_Wall + 10);
+	cout << char(219);
+	// E
+	gotoXY(Left_Wall + 36, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 36, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 36, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 36, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 36, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 37, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 37, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 37, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 38, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 38, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 38, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 39, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 39, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 39, Top_Wall + 10);
+	cout << char(219);
+	// G
+	gotoXY(Left_Wall + 44, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 44, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 44, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 44, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 44, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 45, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 45, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 46, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 46, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 46, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 47, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 47, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 47, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 47, Top_Wall + 10);
+	cout << char(219);
+	// A
+	gotoXY(Left_Wall + 49, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 49, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 49, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 49, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 50, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 50, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 51, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 51, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 52, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 52, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 52, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 52, Top_Wall + 10);
+	cout << char(219);
+	// M
+	gotoXY(Left_Wall + 54, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 54, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 54, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 54, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 55, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 56, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 56, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 57, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 58, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 58, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 58, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 58, Top_Wall + 10);
+	cout << char(219);
+	// E
+	gotoXY(Left_Wall + 60, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 60, Top_Wall + 7);
+	cout << char(219);
+	gotoXY(Left_Wall + 60, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 60, Top_Wall + 9);
+	cout << char(219);
+	gotoXY(Left_Wall + 60, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 61, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 61, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 61, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 62, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 62, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 62, Top_Wall + 10);
+	cout << char(219);
+	gotoXY(Left_Wall + 63, Top_Wall + 6);
+	cout << char(219);
+	gotoXY(Left_Wall + 63, Top_Wall + 8);
+	cout << char(219);
+	gotoXY(Left_Wall + 63, Top_Wall + 10);
+	cout << char(219);
+}
+void Display_GameOver(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall) {
 	clrscr();
-	// draw corner
-	gotoXY(Left_Wall, Top_Wall);
+	draw_wall(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+	DrawGameName(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+	int Top = 19, Bottom = 21;
+	int LeftPA = 24, RightPA = 38;
+	int LeftMenu = 42, RightMenu = 50;
+	//draw play again
+	gotoXY(LeftPA, Top);
 	cout << char(201);
-	gotoXY(Left_Wall, Bottom_Wall);
+	gotoXY(LeftPA, Bottom);
 	cout << char(200);
-	gotoXY(Right_Wall, Bottom_Wall);
+	gotoXY(RightPA, Bottom);
 	cout << char(188);
-	gotoXY(Right_Wall, Top_Wall);
+	gotoXY(RightPA, Top);
 	cout << char(187);
 	// Draw left + right wall
-	for (int y = Top_Wall + 1; y <= Bottom_Wall - 1; y++) {
-		gotoXY(Left_Wall, y);
+	for (int y = Top + 1; y <= Bottom - 1; y++) {
+		gotoXY(LeftPA, y);
 		cout << (char)186;
-		gotoXY(Right_Wall, y);
+		gotoXY(RightPA, y);
 		cout << (char)186;
 	}
 	//Draw Top + bottom wall
-	for (int x = Left_Wall + 1; x <= Right_Wall - 1; x++) {
-		gotoXY(x, Top_Wall);
+	for (int x = LeftPA + 1; x <= RightPA - 1; x++) {
+		gotoXY(x, Top);
 		cout << (char)205;
-		gotoXY(x, Bottom_Wall);
+		gotoXY(x, Bottom);
 		cout << (char)205;
 	}
-	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 - 1);
-	cout << "GAME OVER!";
-	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 + 1);
-	cout << "Your POINT: ";
-	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 + 3);
-	cout << "PLay again?";
-	//gotoXY(Right_Wall / 2 - 5, Bottom_Wall / 2 + 4);
-	//cout << "EXIT";
-	gotoXY(Right_Wall / 2 - 7, Bottom_Wall / 2 + 4);
-	cout << "Type \"yes\" to continue. ";
-	gotoXY(Right_Wall / 2 + 7, Bottom_Wall / 2 + 3);
-	string a;
-	getline(cin, a);
-	if (a == "yes" || a=="YES" || a=="Yes")
-		return true;
-	return false;
-}
+	gotoXY(LeftPA + 1, Top + 1);
+	cout << "1.PLAY AGAIN";
 
-// bắt đầu game
-void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall)
-{
-	point = 0; // reset point
+
+	//draw HighScore
+	gotoXY(LeftMenu, Top);
+	cout << char(201);
+	gotoXY(LeftMenu, Bottom);
+	cout << char(200);
+	gotoXY(RightMenu, Bottom);
+	cout << char(188);
+	gotoXY(RightMenu, Top);
+	cout << char(187);
+	// Draw left + right wall
+	for (int y = Top + 1; y <= Bottom - 1; y++) {
+		gotoXY(LeftMenu, y);
+		cout << (char)186;
+		gotoXY(RightMenu, y);
+		cout << (char)186;
+	}
+	//Draw Top + bottom wall
+	for (int x = LeftMenu + 1; x <= RightMenu - 1; x++) {
+		gotoXY(x, Top);
+		cout << (char)205;
+		gotoXY(x, Bottom);
+		cout << (char)205;
+	}
+	gotoXY(LeftMenu + 1, Top + 1);
+	cout << "2.MENU";
+
+
+
+	gotoXY(36, Bottom + 2);
+	cout << "GAME OVER!";
+	gotoXY(35, Bottom + 3);
+	cout << "YOUR SCORE: " << point;
+	gotoXY(34, Bottom + 5);
+	cout << "PRESS NUMBER: ";
+	gotoXY(48, Bottom+5);
+	int n;
+	cin >> n;
+	if (n==1)
+		run_game(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+	if (n == 2);
+		Display_GameStart(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+}
+void Display_GameStart(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall) {
 	clrscr();
+	draw_wall(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+	DrawGameName(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+	int Top = 18, Bottom = 20;
+	int LeftStart = 21, RightStart = 30;
+	int LeftHS = 34, RightHS = 48;
+	int LeftExit = 51, RightExit = 59;
+
+
+	//draw Start
+	gotoXY(LeftStart, Top);
+	cout << char(201);
+	gotoXY(LeftStart, Bottom);
+	cout << char(200);
+	gotoXY(RightStart, Bottom);
+	cout << char(188);
+	gotoXY(RightStart, Top);
+	cout << char(187);
+		// Draw left + right wall
+	for (int y = Top + 1; y <= Bottom - 1; y++) {
+		gotoXY(LeftStart, y);
+		cout << (char)186;
+		gotoXY(RightStart, y);
+		cout << (char)186;
+	}
+		//Draw Top + bottom wall
+	for (int x = LeftStart + 1; x <= RightStart - 1; x++) {
+		gotoXY(x, Top);
+		cout << (char)205;
+		gotoXY(x, Bottom);
+		cout << (char)205;
+	}
+	gotoXY(LeftStart + 1, Top + 1);
+	cout << "1.START";
+
+
+	//draw HighScore
+	gotoXY(LeftHS, Top);
+	cout << char(201);
+	gotoXY(LeftHS, Bottom);
+	cout << char(200);
+	gotoXY(RightHS, Bottom);
+	cout << char(188);
+	gotoXY(RightHS, Top);
+	cout << char(187);
+		// Draw left + right wall
+	for (int y = Top + 1; y <= Bottom - 1; y++) {
+		gotoXY(LeftHS, y);
+		cout << (char)186;
+		gotoXY(RightHS, y);
+		cout << (char)186;
+	}
+		//Draw Top + bottom wall
+	for (int x = LeftHS + 1; x <= RightHS - 1; x++) {
+		gotoXY(x, Top);
+		cout << (char)205;
+		gotoXY(x, Bottom);
+		cout << (char)205;
+	}
+	gotoXY(LeftHS + 1, Top +1);
+	cout << "2.HIGHTSCORE";
+
+
+	//Draw Exit
+	gotoXY(LeftExit, Top);
+	cout << char(201);
+	gotoXY(LeftExit, Bottom);
+	cout << char(200);
+	gotoXY(RightExit, Bottom);
+	cout << char(188);
+	gotoXY(RightExit, Top);
+	cout << char(187);
+		// Draw left + right wall
+	for (int y = Top + 1; y <= Bottom - 1; y++) {
+		gotoXY(LeftExit, y);
+		cout << (char)186;
+		gotoXY(RightExit, y);
+		cout << (char)186;
+	}
+		//Draw Top + bottom wall
+	for (int x = LeftExit + 1; x <= RightExit - 1; x++) {
+		gotoXY(x, Top);
+		cout << (char)205;
+		gotoXY(x, Bottom);
+		cout << (char)205;
+	}
+	gotoXY(LeftExit + 1, Top + 1);
+	cout << "3.EXIT";
+
+
+	gotoXY(34, Bottom + 3);
+	cout << "PRESS NUMBER: ";
+	gotoXY(48, Bottom + 3);
+	int n;
+	cin >> n;
+	if (n == 1)
+		run_game(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+	if (n == 2)
+		cout << point;
+	if (n == 3) {
+		gotoXY(0, Bottom_Wall + 1);
+		cout << "Exiting....." << endl;
+	}
+	return;
+}
+// bắt đầu game
+void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall){
+	clrscr();
+	point = 0;
+	numberOfDots = 5;
+	direction = RIGHT;
+	setTextColor(7);
 	init_Snake(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	draw_wall(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
-	ToaDo food = display_food(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);// hiển thị thức ăn và trả về tọa độ 		
-	ToaDo fake_food = display_FAKEfood(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
-																			// vòng lặp trò chơi
-	int SnakeX,SnakeY; // lấy toạ độ thân rắn lúc quẹo 
+	ToaDo food = display_food(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);// hiển thị thức ăn và trả về tọa độ
+	ToaDo fake_food = display_FakeFood(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+	ToaDo death_food = display_DeathFood(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+	int SnakeX, SnakeY; // lấy toạ độ thân rắn lúc quẹo 
+	int SpeedX = 100, SpeedY = 130;
+	// vòng lặp trò chơi
 	while (true)
 	{
 		gotoXY(Left_Wall + 7, Bottom_Wall + 1);
 		cout << point;
-		do_events(direction,SnakeX,SnakeY);
+		do_events(direction, SnakeX, SnakeY);
 		move(direction);
-		display_Snake(direction, SnakeX, SnakeY);
-		
-		if (checkEatFood(food) == true)
+		display_Snake(direction, SnakeX, SnakeY, SpeedX, SpeedY);
+		if (checkEatFood(food, SpeedX, SpeedY) == true)
 		{
 			food = display_food(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 			addDots();
 			point++;
 		}
-
-		if (checkEatFakeFood(fake_food) == true)
+		if (checkEatFakeFood(fake_food, SpeedX, SpeedY) == true)
 		{
-			point = point - 1;
-			fake_food = display_FAKEfood(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
-			addDots();
+			fake_food = display_FakeFood(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+			subDots();
+			point--;
 		}
-
+		if (checkEatDeathFood(death_food) == true)
+			break;
 		if (check_Gameover(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall) == true) {
 			break;
 		}
-
-		Sleep(50);
+		setTextColor(7);
 	}
 	Sleep(500);
-	if (Display_GameOver(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall) == true) {
-		return run_game(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
-	}
+	Display_GameOver(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	gotoXY(Left_Wall, Bottom_Wall + 1);
 }
 // kết thúc game
@@ -485,10 +833,9 @@ int main()
 {
 	int Left_Wall = 0,
 		Top_Wall = 0,
-		Right_Wall = 100,
-		Bottom_Wall = 20;
-	//GetDesktopResolution(Right_Wall, Bottom_Wall);*/
-	run_game(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
+		Right_Wall = 80, 
+		Bottom_Wall = 30;
+	Display_GameStart(Left_Wall, Right_Wall, Top_Wall, Bottom_Wall);
 	system("Pause");
 	return 0;
 }
