@@ -26,8 +26,8 @@ ToaDo FakeFood[MAX];
 int numberOfDots = 5; // số nốt ban đầu của rắn
 int direction = RIGHT; // khởi tạo hướng đi ban đầu 
 
-int point = 0;
 // điểm số khi người chơi bắt đầu
+int point = 0;
 void Display_GameStart(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall);
 void run_game(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall);
 void Display_GameOver(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall);
