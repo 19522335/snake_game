@@ -241,11 +241,11 @@ void draw_wall(int Left_Wall, int Right_Wall, int Top_Wall, int Bottom_Wall) {
 	gotoXY(Right_Wall + 4, Top_Wall + 1);
 	cout << "*** NOTE ***";
 	gotoXY(Right_Wall + 4, Top_Wall + 3);
-	cout << "Red food = Death.";
+	cout << "Red food: Death.";
 	gotoXY(Right_Wall + 4, Top_Wall + 5);
-	cout << "Green food = Increase point and become longer.";
+	cout << "Green food: Increase point and become longer.";
 	gotoXY(Right_Wall + 4, Top_Wall + 7);
-	cout << "Yellow food = Reduce point and become shorter.";
+	cout << "Yellow food: Reduce point and become shorter, less than zero point then die.";
 	gotoXY(Left_Wall, Bottom_Wall + 1);
 	setTextColor(7);
 	cout << "Point: " << point << endl;
